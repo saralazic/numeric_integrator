@@ -2,6 +2,8 @@ package methods;
 
 import functions.Function;
 import gui.Gui;
+import integrator.Error;
+import integrator.func;
 
 public class Romberg {
 
@@ -28,7 +30,7 @@ public class Romberg {
 			this.stepCounter = defaultStepCounter;
 	}
 
-	public double Calculate(Function f, double down, double up) {
+	public double Calculate(func f, double down, double up) throws Error {
 		double[][] r = new double[stepCounter][stepCounter];
 
 		String s1 = "";

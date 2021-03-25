@@ -36,7 +36,7 @@ public class Gui {
 	public JTextField accuracy;
 	public JTextField upperBound;
 	public JTextField lowerBound;
-	public TextArea resultArea;
+	public static TextArea resultArea;
 
 	public JButton btnRestartuj;
 	public JButton btnIzracunaj;
@@ -74,18 +74,28 @@ public class Gui {
 	/**
 	 * Create the application.
 	 */
-	public Gui() {
+	public Gui() throws Error{
 		initialize();
 	}
 
-	public static void init() {
+	public static void init() throws Error{
 		new Gui();
 	}
 
+	
+	public boolean all_filled() {
+		if (accuracy.getText()==null || accuracy.getText()=="") return false;
+		if (upperBound.getText()==null || upperBound.getText()=="") return false;
+		if (lowerBound.getText()==null || lowerBound.getText()=="") return false;
+		if (integralInput.getText()==null || integralInput.getText()=="") return false;
+		return true;
+	}
+	
+	
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	public void initialize() {
+	public void initialize() throws Error{
 		frame = new JFrame();
 		frame.getContentPane().setBackground(new Color(204, 255, 204));
 		frame.setBounds(100, 100, 800, 600);
@@ -199,7 +209,8 @@ public class Gui {
 			public void actionPerformed(ActionEvent e) {
 
 				calculator.reset();
-
+				
+				
 				// enable dugmica na tastaturi se vraca na pocetne vrednosti
 				calculator.init();
 
@@ -207,6 +218,7 @@ public class Gui {
 				lowerBound.setText("");
 				integralInput.setText("");
 				accuracy.setText("");
+				resultArea.setText("");
 			}
 		});
 
@@ -217,23 +229,40 @@ public class Gui {
 		btnIzracunaj.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				calculator.integral.ispis();
-				
-				
+				calculator.integral.print_infix();
 				Double result;
 				result = 0.0;
+				
+				try {
+				if (!all_filled()) throw new Error(); 
+				} catch (Error e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
 				String accuracyPosition = accuracy.getText();
+				
+				
 				up = calculator.rGran(upperBound.getText());
 				down = calculator.rGran(lowerBound.getText());
 
-				System.out.println("Dole" + down + "   Gore" + up);
 				switch (integrationMethod) {
 				case 0: {
 					Romberg r = new Romberg(Double.parseDouble(accuracyPosition), Gui.this);
 					if (up > down)
-						result = r.Calculate(calculator.integralInput, down, up);
+						try {
+							result = r.Calculate(calculator.integral, down, up);
+						} catch (Error e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					else
-						result = -r.Calculate(calculator.integralInput, up, down);
+						try {
+							result = -r.Calculate(calculator.integral, up, down);
+						} catch (Error e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 				}
 					;
 					break;
@@ -260,9 +289,19 @@ public class Gui {
 				case 2: {
 					Trapezoidal tr = new Trapezoidal(Double.parseDouble(accuracyPosition), Gui.this);
 					if (up > down)
-						result = tr.Calculate(calculator.integralInput, down, up);
+						try {
+							result = tr.Calculate(calculator.integral, down, up);
+						} catch (Error e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					else
-						result = -tr.Calculate(calculator.integralInput, up, down);
+						try {
+							result = -tr.Calculate(calculator.integral, up, down);
+						} catch (Error e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 				}
 					;
 				}

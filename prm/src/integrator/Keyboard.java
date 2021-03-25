@@ -14,8 +14,6 @@ public class Keyboard {
 	private Gui gui;
 
 	public Panel panel;
-	
-
 
 	private JTextField input;
 	public Function integralInput;
@@ -27,7 +25,7 @@ public class Keyboard {
 	private final Font btnFont = new Font("Serif", Font.BOLD | Font.ITALIC, 15);
 
 	private int parentheses_cnt = 0; // broj otvorenih zagrada
-	
+
 	public func integral = new func();
 
 	public JTextField setInput(JTextField l) {
@@ -37,6 +35,7 @@ public class Keyboard {
 
 	public void reset() {
 		integralInput = null;
+		integral.reset();
 	}
 
 	private void panelVars(Panel panel) {
@@ -133,26 +132,27 @@ public class Keyboard {
 			operations[i].setEnabled(b);// + - * / ^
 		}
 	}
-	
+
 	public void enableUnaryOperations(boolean b) {
 		for (int i = 5; i < 18; i++) {
-			operations[i].setEnabled(b);// "√", "log", "ln", "e^", "sin", "cos", "tg", "ctg", "asin", "acos", "atan", "acot", π
+			operations[i].setEnabled(b);// "√", "log", "ln", "e^", "sin", "cos", "tg", "ctg", "asin", "acos", "atan",
+										// "acot", π
 			variable.setEnabled(b);
 		}
 	}
-	
+
 	public void enableDigits(boolean b) {
 		for (int i = 0; i < 10; i++) {
 			digits[i].setEnabled(b);
 		}
 	}
-	
+
 	public boolean operationType(String op) {
 		switch (op) {
-		case "x":			
-		case "sin":			
-		case "cos":			
-		case "tan":
+		case "x":
+		case "sin":
+		case "cos":
+		case "tg":
 		case "cot":
 		case "asin":
 		case "acos":
@@ -167,7 +167,7 @@ public class Keyboard {
 		}
 		return true;
 	}
-	
+
 	private class OperationsListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent dog) {
@@ -179,17 +179,17 @@ public class Keyboard {
 				oldContent = gui.lowerBound.getText();
 				oldContent = oldContent + op;
 				gui.lowerBound.setText(oldContent);
-				operations[17].setEnabled(false);//-
-				operations[0].setEnabled(false);//-
+				operations[17].setEnabled(false);// -
+				operations[0].setEnabled(false);// -
 				if (op == "-") {
-					decimal_pt.setEnabled(false);//.
+					decimal_pt.setEnabled(false);// .
 
+				} else {
+					if (oldContent.contains("."))
+						decimal_pt.setEnabled(false);
+					else
+						decimal_pt.setEnabled(true);
 				}
-				else {
-					if (oldContent.contains(".")) decimal_pt.setEnabled(false);
-					else decimal_pt.setEnabled(true);	
-				}
-				
 
 			}
 				;
@@ -199,25 +199,27 @@ public class Keyboard {
 				oldContent = gui.upperBound.getText();
 				oldContent = oldContent + op;
 				gui.upperBound.setText(oldContent);
-				operations[17].setEnabled(false);//-
-				operations[0].setEnabled(false);//-
+				operations[17].setEnabled(false);// -
+				operations[0].setEnabled(false);// -
 				if (op == "-") {
-					decimal_pt.setEnabled(false);//.
+					decimal_pt.setEnabled(false);// .
 
-				}
-				else {
-					if (oldContent.contains(".")) decimal_pt.setEnabled(false);
-					else decimal_pt.setEnabled(true);	
+				} else {
+					if (oldContent.contains("."))
+						decimal_pt.setEnabled(false);
+					else
+						decimal_pt.setEnabled(true);
 				}
 			}
 				;
 				break;
 
 			case 3: {
-				System.out.println("input: "+op);
 				try {
-					if(op=="x") integral.dodajCif("x");
-					else integral.addOperatorToInfixList(op, operationType(op));
+					if (op == "x")
+						integral.dodajCif("x");
+					else
+						integral.addOperatorToInfixList(op, operationType(op));
 				} catch (Error e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -233,7 +235,7 @@ public class Keyboard {
 				case "cos":
 					integralInput = new Cos();
 					break;
-				case "tan":
+				case "tg":
 					integralInput = new Tan();
 					break;
 				case "cot":
@@ -272,7 +274,7 @@ public class Keyboard {
 					parentheses_cnt--;
 
 				// enable dugmica za operations
-				if (op == "Ï€" || op == ")") {
+				if (op == "π" || op == ")") {
 					enableDigits(false);
 					enableUnaryOperations(false);
 					enableBinaryOperations(true);
@@ -288,27 +290,27 @@ public class Keyboard {
 					}
 
 				decimal_pt.setEnabled(false);
-				if (!operationType(op) && op!="x" && op!="π")
+				if (!operationType(op) && op != "x" && op != "π")
 					input.setText(oldContent + " " + op + "x ");
 				else
 					input.setText(oldContent + " " + op + " ");
-				
-				if(!operationType(op)) {
+
+				if (!operationType(op)) {
 					enableDigits(false);
 					enableUnaryOperations(false);
 					enableBinaryOperations(true);
 					operations[18].setEnabled(false);
-					operations[19].setEnabled(parentheses_cnt>0);
+					operations[19].setEnabled(parentheses_cnt > 0);
 
-				} else{
+				} else {
 					enableDigits(true);
 					enableUnaryOperations(true);
 					enableBinaryOperations(false);
 					operations[18].setEnabled(true);
-					
+
 				}
-				
-				if (op == "Ï€" || op == ")") {
+
+				if (op == "π" || op == ")") {
 					enableDigits(false);
 					enableUnaryOperations(false);
 					enableBinaryOperations(true);
@@ -330,7 +332,6 @@ public class Keyboard {
 		@Override
 		public void actionPerformed(ActionEvent event) {
 
-			
 			String btn = event.getActionCommand();
 			String oldContent;
 
@@ -339,15 +340,16 @@ public class Keyboard {
 				oldContent = gui.lowerBound.getText();
 				oldContent = oldContent + btn;
 				gui.lowerBound.setText(oldContent);
-				operations[17].setEnabled(false);//-
-				operations[0].setEnabled(false);//-
+				operations[17].setEnabled(false);// -
+				operations[0].setEnabled(false);// -
 				if (btn == "-") {
-					decimal_pt.setEnabled(false);//.
+					decimal_pt.setEnabled(false);// .
 
-				}
-				else {
-					if (oldContent.contains(".")) decimal_pt.setEnabled(false);
-					else decimal_pt.setEnabled(true);	
+				} else {
+					if (oldContent.contains("."))
+						decimal_pt.setEnabled(false);
+					else
+						decimal_pt.setEnabled(true);
 				}
 
 			}
@@ -358,16 +360,17 @@ public class Keyboard {
 				oldContent = gui.upperBound.getText();
 				oldContent = oldContent + btn;
 				gui.upperBound.setText(oldContent);
-				
-				operations[17].setEnabled(false);//-
-				operations[0].setEnabled(false);//-
-				if (btn == "-") {
-					decimal_pt.setEnabled(false);//.
 
-				}
-				else {
-					if (oldContent.contains(".")) decimal_pt.setEnabled(false);
-					else decimal_pt.setEnabled(true);	
+				operations[17].setEnabled(false);// -
+				operations[0].setEnabled(false);// -
+				if (btn == "-") {
+					decimal_pt.setEnabled(false);// .
+
+				} else {
+					if (oldContent.contains("."))
+						decimal_pt.setEnabled(false);
+					else
+						decimal_pt.setEnabled(true);
 				}
 			}
 				;
@@ -378,24 +381,24 @@ public class Keyboard {
 				// if (oldContent.length() > 0) decimal_pt.setEnabled(true);
 				oldContent = oldContent + btn;
 				gui.accuracy.setText(oldContent);
-				if (oldContent.contains(".")) decimal_pt.setEnabled(false);
+				if (oldContent.contains("."))
+					decimal_pt.setEnabled(false);
 			}
 				;
 				break;
 
 			case 3: { // INPUT
-				System.out.println("input: "+btn);
 				integral.dodajCif(btn);
-				
+
 				oldContent = input.getText();
-				if (btn!="x" && !operationType(btn) && btn!="π")
+				if (btn != "x" && !operationType(btn) && btn != "π")
 					input.setText(oldContent + btn + " x");
 				else
 					input.setText(oldContent + btn);
-				/*if (btn == "x")
-					input.setText(oldContent + btn);
-				else
-					input.setText(oldContent + btn + " x");*/
+				/*
+				 * if (btn == "x") input.setText(oldContent + btn); else
+				 * input.setText(oldContent + btn + " x");
+				 */
 				for (int i = 0; i < 20; i++) {
 					if (btn == ".")
 						operations[i].setEnabled(false);
@@ -405,12 +408,12 @@ public class Keyboard {
 				operations[19].setEnabled(parentheses_cnt > 0);
 				if (btn == "." || btn == "x")
 					decimal_pt.setEnabled(false);
-				
+
 				else
 					decimal_pt.setEnabled(true);
 
 				enableBinaryOperations(true);
-				//enableDigits(false);
+				// enableDigits(false);
 				enableUnaryOperations(false);
 				operations[18].setEnabled(false);
 
@@ -428,8 +431,14 @@ public class Keyboard {
 	}
 
 	public double rGran(String oldContent) {
-		if (oldContent == null || oldContent.length() == 0)
-			System.out.println("GRESKA");
+		try {
+			if (oldContent == null || oldContent.length() == 0)
+				throw new Error();
+
+		} catch (Error e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		String s = oldContent, s1 = "";
 		char c;

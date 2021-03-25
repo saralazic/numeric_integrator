@@ -1,7 +1,7 @@
 package integrator;
 
 
-public class TabelaPrioriteta {
+public class PriorityTable {
 
 	class Info{
 		public String operator;
@@ -19,7 +19,7 @@ public class TabelaPrioriteta {
 	
 	public Info[] tbl;
 	
-	public TabelaPrioriteta() {
+	public PriorityTable() {
 		tbl=new Info[7];
 		
 		tbl[0]=new Info("+", 2, 2, -1);

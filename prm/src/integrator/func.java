@@ -12,6 +12,10 @@ public class func {
 
 	public static final Elem node_x = new Elem("x", func.VARIABLE), node_pi = new Elem("π", func.PI);
 
+	
+	public Elem infix_0;
+	public int sz;
+	
 	public func() {
 		infix = new Stack<Elem>();
 		postfix = new Stack<Elem>();
@@ -19,23 +23,20 @@ public class func {
 
 	// dodavanje operatora u listu
 	public void addOperatorToInfixList(String s, boolean bin) throws Error {
-		System.out.println("dodajOp: " + s);
 		if (infix.empty() && bin)
-			throw new Error();// i ako je binarni, greska je u unosu
+			throw new Error();
 
 		if (s == "π")
-			infix.push(func.node_pi); // ako je pi, dodajem pi
+			infix.push(func.node_pi);
 		else if (s == "(" || s == ")") {
-			infix.push(new Elem(s, func.PAREN)); // ako je PAREN, dodajem
+			infix.push(new Elem(s, func.PAREN));
 		} else if (!bin) {
-			infix.push(new Elem(s, func.UN_OPERATOR)); // ako je unarni, dodajem ga
+			infix.push(new Elem(s, func.UN_OPERATOR));
 		} else
 			infix.push(new Elem(s, func.BIN_OPERATOR));
 	}
 
-	// dodavanje cifre (ili u vec postojeci element
-	// ili u novi ako je prethodni element operator)
-	// u ovoj funkciji se takodje u listu dodaje i promenljiva
+	// dodavanje cifre/promenljive
 	public void dodajCif(String s) {
 		if (s == "x") {
 			infix.push(func.node_x);
@@ -54,14 +55,7 @@ public class func {
 		}
 	}
 
-	/*
-	 * public boolean isPrefixOperation(String s) { if (s == "log" || s == "ln" || s
-	 * == "e^" || s == "√" || s == "sin" || s == "cos" || s == "tg" || s == "ctg" ||
-	 * s == "asin" || s == "acos" || s == "atan" || s == "acot") return true; return
-	 * false; }
-	 */
-
-	public void ispis() {
+	public void print_infix() {
 		System.out.println("INFIX:");
 		for (int i = 0; i < infix.size(); i++) {
 			System.out.print(" " + infix.get(i).content);
@@ -69,18 +63,18 @@ public class func {
 		System.out.println();
 	}
 
-	// POPRAVI
 	public void in2post() throws Error {
 		System.gc();
-		System.out.println("Usao u in2post");
 		int rank = 0;
 		Elem x;
 
 		Stack<Elem> help = new Stack<Elem>();
 
-		TabelaPrioriteta tab = new TabelaPrioriteta();
+		PriorityTable tab = new PriorityTable();
 
 		Elem next = infix.get(0);
+		infix_0 = next;
+		sz = infix.size();
 		int index = 1;
 
 		while (next != null) {
@@ -118,7 +112,8 @@ public class func {
 
 		print_postfix();
 		help = null;
-		System.out.println("Izasao iz in2post");
+		infix.clear();
+		infix = null;
 	}
 
 	public void print_postfix() {
@@ -166,7 +161,7 @@ public class func {
 			in2post();
 		while (postfix.size() > index) {
 			x = postfix.get(index++);
-			System.out.println(x.content + " " + x.type);
+		//	System.out.println(x.content + " " + x.type);
 			if (x.type == func.NUMBER || x.type == func.PI || x.type == func.VARIABLE)
 				help.push(x);
 			else if (x.type == func.UN_OPERATOR) {
@@ -181,7 +176,7 @@ public class func {
 				case "cos":
 					integralInput = new Cos();
 					break;
-				case "tan":
+				case "tg":
 					integralInput = new Tan();
 					break;
 				case "cot":
@@ -247,72 +242,35 @@ public class func {
 			throw new Error();
 	}
 
-	/*
-	 * 
-	 * public void unarni(Elem p, double x) throws Error { Elem priv = p, sled =
-	 * priv.sledeci;
-	 * 
-	 * // ova petlja prolazi kroz celu listu // i eliminise sve unarne operande
-	 * while (priv != null) { if (priv.type != func.UN_OPERATOR) { // ako nije
-	 * isUnaryarni operand, samo ide dalje // pret=priv; priv = priv.sledeci; if
-	 * (sled != null) sled = sled.sledeci; } else {// ako je trenutni element
-	 * isUnaryarni operand
-	 * 
-	 * Elem tek = priv.sledeci; if (sled.type == func.BIN_OPERATOR) throw new
-	 * Error(); else { func podf = new func(); // podfisUnarykcija // Ako posle
-	 * isUnaryarnog operanda sledi "(", za podfisUnarykciju uzimam sve sto // je u
-	 * PARENadi if (sled.content == "(") { int bz; bz = 1; // NUMBERim PARENade //
-	 * podf.dodajEl(sled); tek = sled.sledeci; while (tek != null) { if (tek.content
-	 * == ")") { bz--; if (bz < 0) throw new Error(); else if (bz == 0) break; else
-	 * podf.dodajEl(tek); } else { if (tek.content == "(") bz++; podf.dodajEl(tek);
-	 * } tek = tek.sledeci; } if (tek == null && bz != 0) throw new Error(); // ako
-	 * PARENada nikad nije zatvorena } else if (sled.type == func.UN_OPERATOR) {
-	 * unarni(sled, x);
-	 * 
-	 * // PROVERI STA JE U PARENADI podf.dodajEl(priv.sledeci); } else
-	 * podf.dodajEl(sled);
-	 * 
-	 * double d = podf.aprox(x); Elem e = new Elem(d + "", func.NUMBER); if (tek !=
-	 * null) e.sledeci = tek.sledeci; else e.sledeci = null; priv.sledeci = e; } //
-	 * sad je podfisUnarykcija oblika fisUnarykcija(NUMBER)
-	 * 
-	 * func f; /* switch(priv.content) { case "log": f=new Log(); break; case "ln":
-	 * f=new Ln(); break; case "e2": f=new e2(); break; case "âˆš": f=new Root();
-	 * break; case "sin": f=new Sin(); break; case "cos": f=new Cos(); break; case
-	 * "tan": f=new Tan(); break; case "cot": f=new Cot(); break; case "asin": f=new
-	 * Asin(); break; case "acos": f=new Acos(); break; case "atan": f=new Atan();
-	 * break; case "acot": f=new Acot(); break; default: f=new fja(); break; }
-	 * 
-	 * double dd=f.aprox(x);
-	 * 
-	 * priv.content=dd+""; priv.type=fja.NUMBER;
-	 * 
-	 * priv.sledeci=priv.sledeci.sledeci;
-	 * 
-	 * } } // while(priv!=null) }// isUnaryarni
-	 */
-
 	
 	public double aprox(double x) throws Error {
 		//System.out.println("aprox");
 		double d;
-		if (infix.empty())
+		if (infix!=null && infix.size()>0) { infix_0 = infix.get(0); sz = infix.size(); }
+ 		if (infix_0==null)
 			throw new Error();
-		if (infix.size() == 1) {
-			if (infix.get(0).type == func.PI)
+		if (sz == 1) {
+			if (infix_0.type == func.PI)
 				return Math.PI;
-			if (infix.get(0).type == func.NUMBER)
+			if (infix_0.type == func.NUMBER)
 				return Double.parseDouble(infix.get(0).content);
-			else if (infix.get(0).type == func.VARIABLE)
+			else if (infix_0.type == func.VARIABLE)
 				return x;
 			else
-				throw new Error(); // Greska ako je sam operand ili PARENada
+				throw new Error(); // Greska ako je sam operand ili zagrada
 		} else {
 
 			d = evalExp(x);
-			System.out.println("\n d");
 		}
 		return d;
+	}
+	
+	
+	public void reset() {
+		infix = null; postfix = null;
+		infix = new Stack<Elem>();
+		postfix = new Stack<Elem>();
+		
 	}
 
 }

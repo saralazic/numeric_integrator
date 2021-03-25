@@ -2,6 +2,8 @@ package methods;
 
 import functions.Function;
 import gui.Gui;
+import integrator.Error;
+import integrator.func;
 
 public class Trapezoidal {
 
@@ -13,7 +15,7 @@ public class Trapezoidal {
 		this.gui = i;
 	}
 
-	public double Calculate(Function f, double down, double up) {
+	public double Calculate(func f, double down, double up) throws Error {
 		double d = 0;
 
 		String s1, s2;
